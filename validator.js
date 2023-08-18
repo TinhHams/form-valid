@@ -1,3 +1,12 @@
+const submitBtn = document.querySelector(".form-submit");
+submitBtn.onclick = function() {
+    submitBtn.classList.add("submit-btn");
+    
+    setTimeout(function() {
+        submitBtn.classList.remove("submit-btn");
+    }, 100);
+}
+
 // Hàm Validator
 function Validator(options) {
 
@@ -27,6 +36,18 @@ function Validator(options) {
     var formElement = document.querySelector(options.form);
 
     if (formElement) {
+
+        // Khi submit form
+        formElement.onsubmit = function(e) {
+            e.preventDefault();
+
+            // Lặp qua từng rule và validate
+            options.rules.forEach(function(rule) {
+                var inputElement = formElement.querySelector(rule.selector);
+                Validate(inputElement, rule);
+
+            });
+        }
         
         options.rules.forEach(function (rule) {
             if (Array.isArray(selectorRules[rule.selector])) {
@@ -40,7 +61,7 @@ function Validator(options) {
             if (inputElement) {
                 // Xử lí khi người dùng bấm ra ngoài (blur)
                 inputElement.onblur = function() {
-                    Validate(inputElement, rule)
+                    Validate(inputElement, rule);
                 } 
 
                 // Xử lí khi người dùng nhập vào input

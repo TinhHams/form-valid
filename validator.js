@@ -4,7 +4,7 @@ submitBtn.onclick = function() {
     
     setTimeout(function() {
         submitBtn.classList.remove("submit-btn");
-    }, 100);
+    }, 50);
 }
 
 // Hàm Validator
@@ -31,6 +31,8 @@ function Validator(options) {
             errorElement.innerText = "";
             errorElement.parentElement.classList.remove("invalid");
         }
+
+        return !errorMessage;
     }
 
     var formElement = document.querySelector(options.form);
@@ -41,12 +43,29 @@ function Validator(options) {
         formElement.onsubmit = function(e) {
             e.preventDefault();
 
+            var isFormValid = true;
+
             // Lặp qua từng rule và validate
             options.rules.forEach(function(rule) {
                 var inputElement = formElement.querySelector(rule.selector);
-                Validate(inputElement, rule);
-
+                var isValid = Validate(inputElement, rule);
+                if (!isValid) {
+                    isFormValid = false;
+                }
             });
+
+            if (isFormValid) {
+                if (typeof options.onSubmit === "function") {
+                    
+                    var enableInputs = formElement.querySelectorAll("[name]");
+
+                    var formValues = Array.from(enableInputs).reduce(function (values, input) {
+                        return (values[input.name] = input.value) && values
+                    }, {});
+
+                    options.onSubmit (formValues);
+                };
+            }
         }
         
         options.rules.forEach(function (rule) {
